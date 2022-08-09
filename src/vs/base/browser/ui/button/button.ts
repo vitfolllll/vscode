@@ -169,9 +169,6 @@ export class Button extends Disposable implements IButton {
 		}
 	}
 
-	private setOutlineColor(): void {
-	}
-
 	style(styles: IButtonStyles): void {
 		this.buttonForeground = styles.buttonForeground;
 		this.buttonBackground = styles.buttonBackground;
