@@ -14,8 +14,9 @@
 	align-items: center;
 }
 
-.monaco-text-button:focus {
-	outline-offset: 2px !important;
+.monaco-dropdown-button:focus,
+.monaco-text-button:focus  {
+	outline-offset: -4px !important;
 }
 
 .monaco-text-button:hover {
@@ -40,10 +41,6 @@
 
 .monaco-button-dropdown.disabled {
 	cursor: default;
-}
-
-.monaco-button-dropdown > .monaco-button:focus {
-	outline-offset: -1px !important;
 }
 
 .monaco-button-dropdown.disabled > .monaco-button.disabled,

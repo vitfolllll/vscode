@@ -139,8 +139,20 @@ export class Button extends Disposable implements IButton {
 
 		// Also set hover background when button is focused for feedback
 		this.focusTracker = this._register(trackFocus(this._element));
-		this._register(this.focusTracker.onDidFocus(() => { if (this.enabled) { this.setHoverBackground(); } }));
-		this._register(this.focusTracker.onDidBlur(() => { if (this.enabled) { this.applyStyles(); } }));
+		this._register(this.focusTracker.onDidFocus(() => {
+			if (this.enabled) {
+				this.setHoverBackground();
+			}
+			if (this.buttonForeground) {
+				this._element.style.outlineColor = this.buttonForeground.toString();
+			}
+		}));
+		this._register(this.focusTracker.onDidBlur(() => {
+			if (this.enabled) {
+				this.applyStyles();
+			}
+			this._element.style.outlineColor = '';
+		}));
 
 		this.applyStyles();
 	}
@@ -155,6 +167,9 @@ export class Button extends Disposable implements IButton {
 		if (hoverBackground) {
 			this._element.style.backgroundColor = hoverBackground;
 		}
+	}
+
+	private setOutlineColor(): void {
 	}
 
 	style(styles: IButtonStyles): void {
