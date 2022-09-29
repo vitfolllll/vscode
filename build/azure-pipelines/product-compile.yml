@@ -200,3 +200,10 @@ steps:
       inputs:
         sourceScanPath: $(Build.SourcesDirectory)
       continueOnError: true
+
+  - ${{ if ne(parameters.VSCODE_QUALITY, 'oss') }}:
+    - task: notice@0
+      displayName: "Generate NOTICE File"
+      inputs:
+        outputformat: "text"
+      continueOnError: true
