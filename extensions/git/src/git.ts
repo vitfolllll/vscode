@@ -1968,6 +1968,7 @@ export class Repository {
 					}));
 				}
 
+				console.log('statusLength: ', parser.status.length);
 				c({ status: parser.status, statusLength: parser.status.length, didHitLimit: false });
 			};
 
