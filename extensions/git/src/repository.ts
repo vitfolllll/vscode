@@ -2070,7 +2070,7 @@ export class Repository implements Disposable {
 			merge: Resource[] = [],
 			untracked: Resource[] = [];
 
-		console.log('entries: ', status.length);
+		// console.log('entries: ', status.length);
 		status.forEach(raw => {
 			const uri = Uri.file(path.join(this.repository.root, raw.path));
 			const renameUri = raw.rename
