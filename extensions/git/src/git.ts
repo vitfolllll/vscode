@@ -710,6 +710,7 @@ export class GitStatusParser {
 	}
 
 	update(raw: string): void {
+		console.log('update - ', raw);
 		let i = 0;
 		let nextI: number | undefined;
 
