@@ -1937,19 +1937,24 @@ export class Repository implements Disposable {
 
 	@throttle
 	private async updateModelState(): Promise<void> {
+		console.log('getStatus start');
+		const status = await this.getStatus();
+		console.log('getStatus end');
+
 		const config = workspace.getConfiguration('git');
 		let sort = config.get<'alphabetically' | 'committerdate'>('branchSortOrder') || 'alphabetically';
 		if (sort !== 'alphabetically' && sort !== 'committerdate') {
 			sort = 'alphabetically';
 		}
+
 		console.log('query start');
-		const [HEAD, refs, remotes, submodules, status, rebaseCommit, mergeInProgress, commitTemplate] =
+		const [HEAD, refs, remotes, submodules, rebaseCommit, mergeInProgress, commitTemplate] =
 			await Promise.all([
 				this.repository.getHEADBranch(),
 				this.repository.getRefs({ sort }),
 				this.repository.getRemotes(),
 				this.repository.getSubmodules(),
-				this.getStatus(),
+				// this.getStatus(),
 				this.getRebaseCommit(),
 				this.isMergeInProgress(),
 				this.getInputTemplate()]);
