@@ -1939,7 +1939,7 @@ export class Repository implements Disposable {
 	private async updateModelState(): Promise<void> {
 		console.log('getStatus start');
 		const status1 = await this.getStatus();
-		console.log('getStatus end', console.log('query end: ', status1.index.length, status1.workingTree.length, status1.merge.length, status1.untracked.length));
+		console.log('getStatus end', status1.index.length, status1.workingTree.length, status1.merge.length, status1.untracked.length);
 
 		const config = workspace.getConfiguration('git');
 		let sort = config.get<'alphabetically' | 'committerdate'>('branchSortOrder') || 'alphabetically';
