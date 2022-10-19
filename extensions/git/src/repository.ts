@@ -1938,8 +1938,8 @@ export class Repository implements Disposable {
 	@throttle
 	private async updateModelState(): Promise<void> {
 		console.log('getStatus start');
-		const status = await this.getStatus();
-		console.log('getStatus end');
+		const status1 = await this.getStatus();
+		console.log('getStatus end', console.log('query end: ', status1.index.length, status1.workingTree.length, status1.merge.length, status1.untracked.length));
 
 		const config = workspace.getConfiguration('git');
 		let sort = config.get<'alphabetically' | 'committerdate'>('branchSortOrder') || 'alphabetically';
@@ -1948,18 +1948,18 @@ export class Repository implements Disposable {
 		}
 
 		console.log('query start');
-		const [HEAD, refs, remotes, submodules, rebaseCommit, mergeInProgress, commitTemplate] =
+		const [HEAD, refs, remotes, submodules, status2, rebaseCommit, mergeInProgress, commitTemplate] =
 			await Promise.all([
 				this.repository.getHEADBranch(),
 				this.repository.getRefs({ sort }),
 				this.repository.getRemotes(),
 				this.repository.getSubmodules(),
-				// this.getStatus(),
+				this.getStatus(),
 				this.getRebaseCommit(),
 				this.isMergeInProgress(),
 				this.getInputTemplate()]);
 
-		console.log('query end: ', status.index.length, status.workingTree.length, status.merge.length, status.untracked.length);
+		console.log('query end: ', status2.index.length, status2.workingTree.length, status2.merge.length, status2.untracked.length);
 
 		this._HEAD = HEAD;
 		this._refs = refs!;
@@ -1969,10 +1969,10 @@ export class Repository implements Disposable {
 		this.mergeInProgress = mergeInProgress;
 
 		// set resource groups
-		this.mergeGroup.resourceStates = status.merge;
-		this.indexGroup.resourceStates = status.index;
-		this.workingTreeGroup.resourceStates = status.workingTree;
-		this.untrackedGroup.resourceStates = status.untracked;
+		this.mergeGroup.resourceStates = status1.merge;
+		this.indexGroup.resourceStates = status1.index;
+		this.workingTreeGroup.resourceStates = status1.workingTree;
+		this.untrackedGroup.resourceStates = status1.untracked;
 
 		// set count badge
 		this.setCountBadge();
