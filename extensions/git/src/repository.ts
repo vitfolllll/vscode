@@ -2113,6 +2113,7 @@ export class Repository implements Disposable {
 			return undefined;
 		});
 
+		console.log('here!', index.length, workingTree.length, merge.length, untracked.length);
 		return { index, workingTree, merge, untracked };
 	}
 
