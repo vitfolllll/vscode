@@ -1956,6 +1956,7 @@ export class Repository {
 			const child = this.stream(args, { env });
 
 			const onExit = (exitCode: number) => {
+				console.log('onExit', exitCode);
 				if (exitCode !== 0) {
 					const stderr = stderrData.join('');
 					return e(new GitError({
@@ -1974,10 +1975,11 @@ export class Repository {
 
 			const limit = opts?.limit ?? 10000;
 			const onStdoutData = (raw: string) => {
+				console.log('onStdoutData');
 				parser.update(raw);
 
 				if (limit !== 0 && parser.status.length > limit) {
-					child.removeListener('exit', onExit);
+					child.removeListener('close', onExit);
 					child.stdout!.removeListener('data', onStdoutData);
 					child.kill();
 
@@ -1993,7 +1995,7 @@ export class Repository {
 			child.stderr!.on('data', raw => stderrData.push(raw as string));
 
 			child.on('error', cpErrorHandler(e));
-			child.on('exit', onExit);
+			child.on('close', onExit);
 		});
 	}
 
