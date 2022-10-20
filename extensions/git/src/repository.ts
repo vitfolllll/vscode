@@ -1218,6 +1218,38 @@ export class Repository implements Disposable {
 		await this.run(Operation.Add, async () => {
 			await this.repository.add(resources.map(r => r.fsPath), opts);
 			this.closeDiffEditors([], [...resources.map(r => r.fsPath)]);
+
+			try {
+				// Optimistically update the resource groups
+				const resourcePaths = resources.map(r => r.fsPath);
+				const indexResourcePaths = this.indexGroup.resourceStates.map(r => r.resourceUri.fsPath);
+
+				// Collect added resources
+				const newResourceStates: Resource[] = [];
+				for (const resource of [...this.mergeGroup.resourceStates, ...this.untrackedGroup.resourceStates, ...this.workingTreeGroup.resourceStates]) {
+					if (resourcePaths.includes(resource.resourceUri.fsPath) &&
+						!indexResourcePaths.includes(resource.resourceUri.fsPath)) {
+						newResourceStates.push(resource);
+					}
+				}
+
+				// Add new resource(s) to index group
+				this.indexGroup.resourceStates = [...this.indexGroup.resourceStates, ...newResourceStates];
+
+				// Remove resource(s) from merge group
+				this.mergeGroup.resourceStates = this.mergeGroup.resourceStates
+					.filter(r => !resourcePaths.includes(r.resourceUri.fsPath));
+
+				// Remove resource(s) from working group
+				this.workingTreeGroup.resourceStates = this.workingTreeGroup.resourceStates
+					.filter(r => !resourcePaths.includes(r.resourceUri.fsPath));
+
+				// Remove resource(s) from untracked group
+				this.untrackedGroup.resourceStates = this.untrackedGroup.resourceStates
+					.filter(r => !resourcePaths.includes(r.resourceUri.fsPath));
+
+				this._onDidChangeStatus.fire();
+			} catch (err) { }
 		});
 	}
 
@@ -1240,6 +1272,35 @@ export class Repository implements Disposable {
 			this.closeDiffEditors([...resources.length !== 0 ?
 				resources.map(r => r.fsPath) :
 				this.indexGroup.resourceStates.map(r => r.resourceUri.fsPath)], []);
+
+			try {
+				// Optimistically update the resource groups
+				const resourcePaths = resources.length === 0 ?
+					this.indexGroup.resourceStates.map(r => r.resourceUri.fsPath) : resources.map(r => r.fsPath);
+
+				// Collect removed resources
+				const trackedResources: Resource[] = [];
+				const untrackedResources: Resource[] = [];
+				for (const resource of this.indexGroup.resourceStates) {
+					if (resourcePaths.includes(resource.resourceUri.fsPath)) {
+						if (resource.type !== Status.UNTRACKED) {
+							trackedResources.push(resource);
+						}
+					}
+				}
+
+				// Add resource(s) to working group
+				this.workingTreeGroup.resourceStates = [...this.workingTreeGroup.resourceStates, ...trackedResources];
+
+				// Add resource(s) to untracked group
+				this.untrackedGroup.resourceStates = [...this.untrackedGroup.resourceStates, ...untrackedResources];
+
+				// Remove resource(s) from index group
+				this.indexGroup.resourceStates = this.indexGroup.resourceStates
+					.filter(r => !resourcePaths.includes(r.resourceUri.fsPath));
+
+				this._onDidChangeStatus.fire();
+			} catch (err) { }
 		});
 	}
 
