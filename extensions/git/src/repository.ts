@@ -1252,6 +1252,27 @@ export class Repository implements Disposable {
 		const workingGroupResources = opts.all && opts.all !== 'tracked' ?
 			[...this.workingTreeGroup.resourceStates.map(r => r.resourceUri.fsPath)] : [];
 
+		const updateModelState = async () => {
+			// Commit input
+			if (message) {
+				this._sourceControl.inputBox.value = await this.getInputTemplate();
+			}
+
+			// Resource groups
+			this.indexGroup.resourceStates = [];
+
+			if (opts.all === 'tracked') {
+				this.workingTreeGroup.resourceStates =
+					this.workingTreeGroup.resourceStates
+						.filter(r => r.type === Status.UNTRACKED);
+			} else if (opts.all) {
+				this.workingTreeGroup.resourceStates = [];
+				this.untrackedGroup.resourceStates = [];
+			}
+
+			this._onDidChangeStatus.fire();
+		};
+
 		if (this.rebaseCommit) {
 			await this.run(Operation.RebaseContinue, async () => {
 				if (opts.all) {
@@ -1261,6 +1282,8 @@ export class Repository implements Disposable {
 
 				await this.repository.rebaseContinue();
 				this.closeDiffEditors(indexResources, workingGroupResources);
+
+				await updateModelState();
 			});
 		} else {
 			await this.run(Operation.Commit, async () => {
@@ -1278,6 +1301,8 @@ export class Repository implements Disposable {
 
 				await this.repository.commit(message, opts);
 				this.closeDiffEditors(indexResources, workingGroupResources);
+
+				await updateModelState();
 			});
 
 			// Execute post-commit command
