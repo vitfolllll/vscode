@@ -21,8 +21,7 @@ import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 
 export class NativeLocalProcessExtensionHost extends SandboxLocalProcessExtensionHost {
 	protected override async _start(): Promise<IMessagePassingProtocol> {
-		const canUseUtilityProcess = await this._extensionHostStarter.canUseUtilityProcess();
-		if (canUseUtilityProcess && (this._configurationService.getValue<boolean | undefined>('extensions.experimental.useUtilityProcess') || process.sandboxed)) {
+		if (this._configurationService.getValue<boolean | undefined>('extensions.experimental.useUtilityProcess') || process.sandboxed) {
 			const communication = this._toDispose.add(new ExtHostMessagePortCommunication(this._logService));
 			return this._startWithCommunication(communication);
 		} else {
