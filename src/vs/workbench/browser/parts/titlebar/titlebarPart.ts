@@ -8,7 +8,7 @@ import { localize } from 'vs/nls';
 import { Part } from 'vs/workbench/browser/part';
 import { ITitleService, ITitleProperties } from 'vs/workbench/services/title/common/titleService';
 import { getZoomFactor, isWCOEnabled } from 'vs/base/browser/browser';
-import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility } from 'vs/platform/window/common/window';
+import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility, useWindowControlsOverlay } from 'vs/platform/window/common/window';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
@@ -280,7 +280,16 @@ export class TitlebarPart extends Part implements ITitleService {
 			});
 		}
 
-		this.windowControls = append(this.element, $('div.window-controls-container'));
+		/*
+		 * When WCO is not opted in for macOS, we still end up using
+		 * titlebar-area-* CSS env variables to calculate the height of
+		 * following <div> node leading to unnecessary style recalc
+		 * when performing window resize operations.
+		 * Workaround for https://github.com/microsoft/vscode/issues/169142
+		 */
+		if (useWindowControlsOverlay(this.configurationService)) {
+			this.windowControls = append(this.element, $('div.window-controls-container'));
+		}
 
 		// Context menu on title
 		[EventType.CONTEXT_MENU, EventType.MOUSE_DOWN].forEach(event => {
