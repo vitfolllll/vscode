@@ -3,11 +3,11 @@ parameters:
     type: boolean
   - name: VSCODE_QUALITY
     type: string
-  - name: VSCODE_RUN_UNIT_TESTS
+  - name: VSCODE_RUN_ELECTRON_TESTS
     type: boolean
-  - name: VSCODE_RUN_INTEGRATION_TESTS
+  - name: VSCODE_RUN_BROWSER_TESTS
     type: boolean
-  - name: VSCODE_RUN_SMOKE_TESTS
+  - name: VSCODE_RUN_REMOTE_TESTS
     type: boolean
   - name: VSCODE_BUILD_TUNNEL_CLI
     type: boolean
@@ -296,13 +296,13 @@ steps:
           mv $(Build.ArtifactStagingDirectory)/cli/code $(agent.builddirectory)/VSCode-linux-$(VSCODE_ARCH)/bin/$CLI_APP_NAME
         displayName: Make CLI executable
 
-  - ${{ if or(eq(parameters.VSCODE_RUN_UNIT_TESTS, true), eq(parameters.VSCODE_RUN_INTEGRATION_TESTS, true), eq(parameters.VSCODE_RUN_SMOKE_TESTS, true)) }}:
+  - ${{ if or(eq(parameters.VSCODE_RUN_ELECTRON_TESTS, true), eq(parameters.VSCODE_RUN_BROWSER_TESTS, true), eq(parameters.VSCODE_RUN_REMOTE_TESTS, true)) }}:
       - template: product-build-linux-client-test.yml
         parameters:
           VSCODE_QUALITY: ${{ parameters.VSCODE_QUALITY }}
-          VSCODE_RUN_UNIT_TESTS: ${{ parameters.VSCODE_RUN_UNIT_TESTS }}
-          VSCODE_RUN_INTEGRATION_TESTS: ${{ parameters.VSCODE_RUN_INTEGRATION_TESTS }}
-          VSCODE_RUN_SMOKE_TESTS: ${{ parameters.VSCODE_RUN_SMOKE_TESTS }}
+          VSCODE_RUN_ELECTRON_TESTS: ${{ parameters.VSCODE_RUN_ELECTRON_TESTS }}
+          VSCODE_RUN_BROWSER_TESTS: ${{ parameters.VSCODE_RUN_BROWSER_TESTS }}
+          VSCODE_RUN_REMOTE_TESTS: ${{ parameters.VSCODE_RUN_REMOTE_TESTS }}
 
   - ${{ if eq(parameters.VSCODE_PUBLISH, true) }}:
       - script: |
