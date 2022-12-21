@@ -67,7 +67,7 @@ jobs:
             VSCODE_PUBLISH: ${{ variables.VSCODE_PUBLISH }}
             VSCODE_QUALITY: ${{ variables.VSCODE_QUALITY }}
             VSCODE_BUILD_TUNNEL_CLI: false
-            VSCODE_RUN_ELECTRON_TESTS: true
+            VSCODE_RUN_ELECTRON_TESTS: false
             VSCODE_RUN_BROWSER_TESTS: true
             VSCODE_RUN_REMOTE_TESTS: false
 
