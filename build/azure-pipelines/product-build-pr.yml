@@ -54,7 +54,7 @@ jobs:
             VSCODE_RUN_REMOTE_TESTS: false
 
     - job: Linuxx64IntegrationTest
-      displayName: Linux (Browser)
+      displayName: Linux (Browser, Chromium)
       pool: vscode-1es-vscode-linux-20.04
       timeoutInMinutes: 30
       variables:
